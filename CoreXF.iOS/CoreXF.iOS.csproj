@@ -116,9 +116,6 @@
     <PackageReference Include="Xam.Plugins.Settings">
       <Version>3.1.1</Version>
     </PackageReference>
-    <PackageReference Include="Xamarin.Build.Download">
-      <Version>0.4.6</Version>
-    </PackageReference>
     <PackageReference Include="Xamarin.FFImageLoading">
       <Version>2.4.6.929</Version>
     </PackageReference>
