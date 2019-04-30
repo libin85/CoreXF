@@ -1,0 +1,28 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<ContentView 
+    x:Name="_content"
+    xmlns="http://xamarin.com/schemas/2014/forms" 
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:core="clr-namespace:CoreXF;assembly=CoreXF"
+    BackgroundColor="#80000000"
+    xmlns:local="clr-namespace:CoreXF"
+    x:Class="CoreXF.CalendarDialog">
+    <ContentView.Content>
+
+        <local:DialogTemplate
+            x:Name="_dialogTemplate"
+            IsVisible="False"
+            VerticalDialogOption="Center"
+            >
+
+            <core:Calendar
+                Grid.Row="1"  
+                MarkedDayStrokeWidth="0"
+                Margin="5"
+                x:Name="_calendar"
+                />
+           
+        </local:DialogTemplate>
+        
+     </ContentView.Content>
+</ContentView>

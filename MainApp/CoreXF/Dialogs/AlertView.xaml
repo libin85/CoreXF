@@ -1,0 +1,77 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<ContentView 
+    xmlns="http://xamarin.com/schemas/2014/forms" 
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:core="clr-namespace:CoreXF;assembly=CoreXF"
+    BackgroundColor="#80000000"
+    xmlns:local="clr-namespace:MainApp"
+    x:Class="CoreXF.AlertView">
+    <ContentView.Content>
+
+        <Grid
+            Margin="15"
+            VerticalOptions="Center"
+            HorizontalOptions="Center"
+            WidthRequest="{core:Width Percent=85}"
+            >
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <!-- Background
+            FillColor="#FFE9E9E9"
+            -->
+            <core:Material
+                Grid.RowSpan="5"
+                MainColor="White"
+                Radius="10"
+                />
+
+            <!-- Title -->
+            <Label
+                Grid.Row="0"
+                FontAttributes="Bold"
+                HorizontalOptions="Center"
+                Margin="15"
+                Text="{Binding Params.Title}" 
+                TextColor="Black"/>
+
+            <!-- Message -->
+            <ScrollView
+                IsVisible="{Binding Params.HTML,Converter={StaticResource ToVisibleNot}}"
+                Grid.Row="1"
+                Margin="10,0,10,15">
+                
+                <Label 
+                    Text="{Binding Params.Message}"
+                    TextColor="Black"/>
+            </ScrollView>
+            
+            <!-- Separator-->
+            <BoxView 
+                Grid.Row="3"
+                BackgroundColor="#FFBEBEBE"
+                HeightRequest="0.5"/>
+
+            <Label 
+                Grid.Row="4"
+                Margin="15"
+                Text="{Binding Params.Cancel}"
+                FontSize="16"
+                TextColor="#FF0D9DED"       
+                VerticalTextAlignment="Center"
+                HorizontalTextAlignment="Center"
+                HeightRequest="50">
+                <Label.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding CloseCommand}"/>
+                </Label.GestureRecognizers>
+            </Label>
+            
+        </Grid>
+          
+      </ContentView.Content>
+</ContentView>

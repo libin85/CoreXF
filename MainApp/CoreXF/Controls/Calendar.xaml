@@ -1,0 +1,155 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Grid
+    xmlns="http://xamarin.com/schemas/2014/forms" 
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:core="clr-namespace:CoreXF;assembly=CoreXF"
+    HorizontalOptions="Fill"
+    ColumnSpacing="0"
+    RowSpacing="0"
+    x:Name="_mainGrid"
+    BackgroundColor="White"
+    x:Class="CoreXF.Calendar">
+    
+    <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="Auto"/>
+        <ColumnDefinition Width="*"/>
+        <ColumnDefinition Width="*"/>
+        <ColumnDefinition Width="*"/>
+        <ColumnDefinition Width="*"/>
+        <ColumnDefinition Width="*"/>
+        <ColumnDefinition Width="*"/>
+        <ColumnDefinition Width="*"/>
+    </Grid.ColumnDefinitions>
+    <Grid.RowDefinitions>
+        <RowDefinition Height="Auto"/>
+        <RowDefinition Height="Auto"/>
+        <RowDefinition Height="Auto"/>
+        <RowDefinition Height="Auto"/>
+    </Grid.RowDefinitions>
+    <Grid.GestureRecognizers>
+        <SwipeGestureRecognizer Direction="Right" Command="{Binding ChangeMonthCommand,Source={x:Reference _mainGrid}}" CommandParameter="-1"/>
+        <SwipeGestureRecognizer Direction="Left" Command="{Binding ChangeMonthCommand,Source={x:Reference _mainGrid}}" CommandParameter="+1"/>
+    </Grid.GestureRecognizers>
+    
+    <Grid.Resources>
+        <ResourceDictionary>
+
+            <!-- Head -->
+            <ControlTemplate x:Key="_headTemplate">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="40"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="40"/>
+                    </Grid.ColumnDefinitions>
+
+                    <core:Material
+                        Grid.Column="0"
+                        ImageSrc="core:Icons.chevron_left.svg"
+                        HeightRequest="40"
+                        WidthRequest="40"
+                        ImageScale="0.5"
+                        ImageTintColor="#F2353D"
+                        Command="{Binding ChangeMonthCommand}"
+                        CommandParameter="-1"
+                        />
+
+                     <Label 
+                        Grid.Column="1"
+                        Margin="5"
+                        TextColor="#F2353D"
+                        FontSize="Medium"
+                        HorizontalOptions="Fill"
+                        HorizontalTextAlignment="Center"
+                        LineBreakMode="TailTruncation"
+                        Text="{Binding baseDate,StringFormat='{}{0:MMMM yyyy}'}"/>
+
+                    <core:Material
+                        Grid.Column="2"
+                        ImageSrc="core:Icons.chevron_right.svg"
+                        HeightRequest="40"
+                        WidthRequest="40"
+                        ImageScale="0.5"
+                        ImageTintColor="#F2353D"
+                        Command="{Binding ChangeMonthCommand}"
+                        CommandParameter="+1"
+                        />
+
+                </Grid>
+            </ControlTemplate>
+
+            <!-- Week title template -->
+            <ControlTemplate x:Key="_weekTitleTemlate">
+                <Label
+                    VerticalOptions="Center"
+                    HorizontalTextAlignment="Center"
+                    TextColor="{Binding WeekTitleColor, Source={x:Reference _mainGrid}}"
+                    FontSize="{Binding WeekTitleFontSize,Source={x:Reference _mainGrid}}"
+                    FontFamily="{Binding WeekTitleFontFamily,Source={x:Reference _mainGrid}}"
+                    Margin="{Binding WeekTitleMargin, Source={x:Reference _mainGrid}}"
+                    Text="{Binding Name}"/>
+            </ControlTemplate>
+
+            <!-- Week separator template -->
+            <ControlTemplate x:Key="_weekSeparatorTemplate">
+                <core:Line
+                    HeightRequest="1"
+                    Margin="5,0,0,0"
+                    VerticalOptions="End"
+                    Color="LightGray"
+                    />
+            </ControlTemplate>
+
+            <!-- Day template -->
+            <ControlTemplate x:Key="_DayTemplate">
+                <Grid
+                    IsVisible="{Binding IsVisible}"
+                    >
+                    <core:Material
+                        WidthRequest="30"
+                        HorizontalOptions="Center"
+                        Margin="5,5,5,5"
+                        
+                        CircleColor="{Binding CircleColor}"
+                        CircleStrokeColor="{Binding StrokeColor}"
+                        CircleStrokeWidth="{Binding StrokeWidth}"
+                                    
+                        Text="{Binding Day,Converter={StaticResource ToString}}"
+                        TextColor="{Binding TextColor}"
+                        TextFontSize="16"
+                        TextFontAttributes="Bold"
+                        
+                        Command="{Binding TapDayCommand,Source={x:Reference _mainGrid}}"
+                        CommandParameter="{Binding .}"
+                        />
+
+                    <!--TextFontAttributes=""-->
+                </Grid>
+
+            </ControlTemplate>
+
+            <!-- Week start-->
+            <ControlTemplate x:Key="_weekStartTemplate">
+                <Label
+                    IsVisible="{Binding IsVisible}"
+                    VerticalOptions="End"
+                    Margin="5,0"
+                    TextColor="LightGray"
+                    FontSize="Micro"
+                    Text="{Binding WeekOfYear}"
+                    />
+            </ControlTemplate>
+
+            <!-- Separator -->
+            <ControlTemplate x:Key="_SeparatorTemplate">
+                <core:Material
+                    HeightRequest="1"
+                    IsVisible="{Binding IsVisible}"
+                    MainColor="LightGray"
+                    VerticalOptions="End"
+                    />
+            </ControlTemplate>
+        </ResourceDictionary>
+    </Grid.Resources>
+
+</Grid>

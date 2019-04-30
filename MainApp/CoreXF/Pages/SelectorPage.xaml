@@ -1,0 +1,120 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Nav:CommonPage 
+    xmlns="http://xamarin.com/schemas/2014/forms"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:local="clr-namespace:CoreXF"
+    xmlns:Nav="clr-namespace:CoreXF.NavigationAbstraction"
+    xmlns:Tx="clr-namespace:CoreXF;assembly=CoreXF"
+    xmlns:core="clr-namespace:CoreXF;assembly=CoreXF"
+    x:Class="CoreXF.SelectorPage" 
+    >
+    <ContentPage.Content>
+        <Grid
+            x:Name="_mainGrid"
+            >
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <!-- Navigation bar 
+            <local:NavigationBar
+                Title="{Binding Title}"
+                LeftButtonImageSource="Icons.back.svg"
+                LeftButtonCommand="{Binding BackCommand}"
+                />
+            -->
+
+            <!-- Search -->
+            <local:Unifield
+                
+                IsVisible="{Binding ShowSearchBar}"
+                
+                Grid.Row="1"
+                Padding="10"
+                BackgroundColor="White"
+                
+                TextChangedCommand="{Binding SearchButtonPressed}"
+                Placeholder="{Tx:T Commn_Search}"
+                Value="{Binding SearchText,Mode=TwoWay}"
+                        
+                LeftImageSource="Icons.magnifier.svg"
+                LeftImageTintColor="{StaticResource ERPGray}"
+                LeftImageMargin="5,0,0,0"
+                LeftImageCommand="{Binding SearchButtonPressed}"
+                        
+                RightImageSource="Icons2.clear.svg"
+                RightImageMargin="0,0,5,0"
+                RightImageCommand="{Binding ClearSearchCommand}"
+                RightImageCommandParameter="ClearSearchString"
+                        
+                FrameColor="#F1F7FC"
+                FrameRadius="10"
+
+                />
+
+
+            <Grid
+                IsVisible="False"
+                Grid.Row="1"
+                Margin="10,9"
+                >
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <core:Material
+                    ImageScale="0.7"
+                    ImageSrc="Icons.magnifier.svg"
+                    />
+
+                <Entry
+                    Grid.Column="1"
+                    Text="{Binding SearchText,Mode=TwoWay}"
+                    />
+
+                <core:Material
+                    Grid.Column="2"
+                    ImageScale="0.7"
+                    ImageSrc="Icons.clear.svg"
+                    Command="{Binding ClearSearchCommand}"
+                    />
+
+            </Grid>
+            
+            <ListView
+                Grid.Row="2"
+                x:Name="_list"
+                ItemsSource="{Binding Items}"
+                HasUnevenRows="True"
+                >
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <ViewCell>
+                            <Grid
+                                BackgroundColor="White"
+                                >
+                                <Grid.Triggers>
+                                    <DataTrigger TargetType="Grid" Binding="{Binding IsSelected}" Value="True">
+                                        <Setter Property="BackgroundColor" Value="LightGray"/>
+                                    </DataTrigger> 
+                                </Grid.Triggers>
+
+                                <Label 
+                                    Margin="15,10"
+                                    BackgroundColor="Transparent"
+                                    Text="{Binding Name}" 
+                                    LineBreakMode="WordWrap"/>
+                            </Grid>
+                        </ViewCell>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+
+
+        </Grid>
+    </ContentPage.Content>
+</Nav:CommonPage>
