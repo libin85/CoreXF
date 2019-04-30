@@ -1,111 +1,116 @@
-﻿using System;
+﻿
+using Splat;
+using System;
+using System.Collections.Generic;
 using System.IO;
-using System.Threading.Tasks;
+using System.Text;
+using Xamarin.Forms;
 
 namespace CoreXF
 {
-    public enum PlayerState
+
+    public static class LocalAudioPlayer
     {
-        Playing,
-        Paused,
-        Stopped,
-        Loading,
-        Failed
-    }
-
-    public class MediaSource
-    {
-        public string Title { get; set; }
-
-        public string Uri { get; set; }
-
-        public static MediaSource FromFile(string path)
+        class Cache : GenericCache<string, ISimpleAudioPlayer>
         {
-            return new MediaSource { Uri = path };
+            public override ISimpleAudioPlayer CreateValue(string key)
+            {
+                var _audioPlayer = Locator.CurrentMutable.GetService<ISimpleAudioPlayer>();
+                using (Stream _countDownMp3 = ResourceLoader.GetStream(key))
+                {
+                    _audioPlayer.Load(_countDownMp3);
+                }
+                return _audioPlayer;
+            }
+        }
+
+        static Cache cache = new Cache();
+
+        public static void PlaySound(string name)
+        {
+            // is this simulator ?
+            if (Device.RuntimePlatform == Device.iOS && Xamarin.Essentials.DeviceInfo.Model == "x86_64")
+                return;
+
+            var result = cache.GetOrCreateValue(name);
+            result?.Play();
         }
     }
 
+
     /// <summary>
-    /// Interface for <see cref="ISimpleAudioPlayer"/>
+    /// Interface for SimpleAudioPlayer
     /// </summary>
     public interface ISimpleAudioPlayer : IDisposable
     {
         ///<Summary>
-        /// Raised when audio player state is changed 
+        /// Raised when audio playback completes successfully 
         ///</Summary>
-        event EventHandler<PlayerState> StateChanged;
+        event EventHandler PlaybackEnded;
 
         ///<Summary>
-        /// Raised when media item is changed 
+        /// Length of audio in seconds
         ///</Summary>
-        event EventHandler<MediaSource> MediaItemChanged;
-
-        /// <summary>
-        /// Current player state
-        /// </summary>
-        PlayerState State { get; }
-
-        /// <summary>
-        /// Current media item (null if is not playing)
-        /// </summary>
-        MediaSource Current { get; }
+        double Duration { get; }
 
         ///<Summary>
-        /// Length of audio
+        /// Current position of audio playback in seconds
         ///</Summary>
-        TimeSpan Duration { get; }
-
-        ///<Summary>
-        /// Current position of audio playback
-        ///</Summary>
-        TimeSpan Position { get; }
+        double CurrentPosition { get; }
 
         ///<Summary>
         /// Playback volume 0 to 1 where 0 is no-sound and 1 is full volume
         ///</Summary>
-        float Volume { get; set; }
+        double Volume { get; set; }
 
         ///<Summary>
-        /// Load audio file from local storage
+        /// Balance left/right: -1 is 100% left : 0% right, 1 is 100% right : 0% left, 0 is equal volume left/right
         ///</Summary>
-        Task<bool> Load(string filePath);
+        double Balance { get; set; }
 
         ///<Summary>
-        /// Load audio file from local storage
+        /// Indicates if the currently loaded audio file is playing
         ///</Summary>
-        Task<bool> Load(Stream stream);
+        bool IsPlaying { get; }
 
         ///<Summary>
-        /// Begin playback
+        /// Continously repeats the currently playing sound
         ///</Summary>
-        Task Play();
+        bool Loop { get; set; }
 
         ///<Summary>
-        /// Pause playback if playing (can resume)
+        /// Indicates if the position of the loaded audio file can be updated
         ///</Summary>
-        Task Pause();
+        bool CanSeek { get; }
 
         ///<Summary>
-        /// Stop and reset playack
+        /// Load wav or mp3 audio file as a stream
         ///</Summary>
-        Task Stop();
+        bool Load(Stream audioStream);
+
+        ///<Summary>
+        /// Load wav or mp3 audio file from local path
+        ///</Summary>
+        bool Load(string fileName);
+
+        ///<Summary>
+        /// Begin playback or resume if paused
+        ///</Summary>
+        void Play();
+
+        ///<Summary>
+        /// Pause playback if playing (does not resume)
+        ///</Summary>
+        void Pause();
+
+        ///<Summary>
+        /// Stop playack and set the current position to the beginning
+        ///</Summary>
+        void Stop();
 
         ///<Summary>
         /// Set the current playback position (in seconds)
         ///</Summary>
-        bool Seek(TimeSpan position);
-    }
-
-    public static class AudioPlayerExtensions
-    {
-        public static Task PlayOrPause(this ISimpleAudioPlayer player)
-        {
-            if (player.State == PlayerState.Playing)
-            {
-                player.Pause();
-            }
-
-            return player.Play();
-        }
+        void Seek(double position);
     }
 }

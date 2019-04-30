@@ -1,4 +1,4 @@
-﻿using CoreXF.Droid.Services;
+﻿
 using Splat;
 
 namespace CoreXF.Droid
@@ -7,7 +7,7 @@ namespace CoreXF.Droid
     {
         public static void RegisterDependencies()
         {
-            Locator.CurrentMutable.RegisterLazySingleton<ISimpleAudioPlayer>(() => new AndroidExoPlayer());
+            Locator.CurrentMutable.RegisterLazySingleton<ISimpleAudioPlayer>(() => new SimpleAudioPlayerImplementation());
         }
 
         public static void MainActivity_OnCreate()

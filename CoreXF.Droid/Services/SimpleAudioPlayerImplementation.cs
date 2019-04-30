@@ -10,7 +10,7 @@ namespace CoreXF.Droid
     /// Implementation for Feature
     /// </summary>
     [Android.Runtime.Preserve(AllMembers = true)]
-    public class SimpleAudioPlayerImplementation : IOldSimpleAudioPlayer
+    public class SimpleAudioPlayerImplementation : ISimpleAudioPlayer
     {
         ///<Summary>
         /// Raised when audio playback completes successfully 
