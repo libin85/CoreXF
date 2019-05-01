@@ -65,7 +65,7 @@ namespace CoreXF
 
         protected object ConvertValue(double res,IServiceProvider serviceProvider)
         {
-            IProvideValueTarget targ = serviceProvider.GetService(typeof(IProvideValueTarget)) as IProvideValueTarget;
+            IProvideValueTarget targ = serviceProvider?.GetService(typeof(IProvideValueTarget)) as IProvideValueTarget;
             BindableProperty bp = targ?.TargetProperty as BindableProperty;
 
             double res2 = res;
