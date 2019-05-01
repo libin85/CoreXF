@@ -62,6 +62,9 @@ namespace CoreXF
         public static readonly BindableProperty LeftImageMarginProperty = BindableProperty.Create(nameof(LeftImageMargin), typeof(Thickness), typeof(Unifield), default(Thickness));
         public static readonly BindableProperty LeftImageCommandProperty = BindableProperty.Create(nameof(LeftImageCommand), typeof(ICommand), typeof(Unifield), default(ICommand));
         public static readonly BindableProperty LeftImageCommandParameterProperty = BindableProperty.Create(nameof(LeftImageCommandParameter), typeof(object), typeof(Unifield), default(object));
+        public static readonly BindableProperty LeftImageCircleColorProperty = BindableProperty.Create(nameof(LeftImageCircleColor), typeof(Color), typeof(Unifield), default(Color));
+        public static readonly BindableProperty LeftImageCircleStrokeWidthProperty = BindableProperty.Create(nameof(LeftImageCircleStrokeWidth), typeof(double), typeof(Unifield), default(double));
+        public static readonly BindableProperty LeftImageCircleStrokeColorProperty = BindableProperty.Create(nameof(LeftImageCircleStrokeColor), typeof(Color), typeof(Unifield), default(Color));
 
         public static readonly BindableProperty RightImageSourceProperty = BindableProperty.Create(nameof(RightImageSource), typeof(string), typeof(Unifield), default(string));
         public static readonly BindableProperty RightImageTintColorProperty = BindableProperty.Create(nameof(RightImageTintColor), typeof(Color), typeof(Unifield), Material.NoColor);
@@ -73,6 +76,9 @@ namespace CoreXF
         public static readonly BindableProperty RightImageMarginProperty = BindableProperty.Create(nameof(RightImageMargin), typeof(Thickness), typeof(Unifield), default(Thickness));
         public static readonly BindableProperty RightImageCommandProperty = BindableProperty.Create(nameof(RightImageCommand), typeof(ICommand), typeof(Unifield), default(ICommand));
         public static readonly BindableProperty RightImageCommandParameterProperty = BindableProperty.Create(nameof(RightImageCommandParameter), typeof(object), typeof(Unifield), default(object));
+        public static readonly BindableProperty RightImageCircleColorProperty = BindableProperty.Create(nameof(RightImageCircleColor), typeof(Color), typeof(Unifield), default(Color));
+        public static readonly BindableProperty RightImageCircleStrokeWidthProperty = BindableProperty.Create(nameof(RightImageCircleStrokeWidth), typeof(double), typeof(Unifield), default(double));
+        public static readonly BindableProperty RightImageCircleStrokeColorProperty = BindableProperty.Create(nameof(RightImageCircleStrokeColor), typeof(Color), typeof(Unifield), default(Color));
 
         public static readonly BindableProperty ShowSeparatorProperty = BindableProperty.Create(nameof(ShowSeparator), typeof(bool), typeof(Unifield), default(bool));
         public static readonly BindableProperty SeparatorColorProperty = BindableProperty.Create(nameof(SeparatorColor), typeof(Color), typeof(Unifield), Color.Gray);
@@ -131,11 +137,58 @@ namespace CoreXF
         public static readonly BindableProperty TextChangingCommandProperty = BindableProperty.Create(nameof(TextChangingCommand), typeof(ICommand), typeof(Unifield), default(ICommand));
 
         public static readonly BindableProperty ReadOnlyProperty = BindableProperty.Create(nameof(ReadOnly), typeof(bool), typeof(Unifield), default(bool));
-            
+        
+        public Command ClearCommand { get
+            {
+                if (_clearCommand == null)
+                    _clearCommand = new Command(() =>
+                    {
+                        Value = null;
+                    });
+                return _clearCommand;
+            } }
+        Command _clearCommand;
+
         Lazy<INavigationService> _navigation = new Lazy<INavigationService>(()=> Locator.CurrentMutable.GetService<INavigationService>());
         Lazy<IUserDialogs> _dialogs = new Lazy<IUserDialogs>(() => Locator.CurrentMutable.GetService<IUserDialogs>());
 
         #region Properties
+
+        public Color LeftImageCircleStrokeColor
+        {
+            get { return (Color)GetValue(LeftImageCircleStrokeColorProperty); }
+            set { SetValue(LeftImageCircleStrokeColorProperty, value); }
+        }
+
+        public double LeftImageCircleStrokeWidth
+        {
+            get { return (double)GetValue(LeftImageCircleStrokeWidthProperty); }
+            set { SetValue(LeftImageCircleStrokeWidthProperty, value); }
+        }
+
+        public Color LeftImageCircleColor
+        {
+            get { return (Color)GetValue(LeftImageCircleColorProperty); }
+            set { SetValue(LeftImageCircleColorProperty, value); }
+        }
+
+        public Color RightImageCircleStrokeColor
+        {
+            get { return (Color)GetValue(RightImageCircleStrokeColorProperty); }
+            set { SetValue(RightImageCircleStrokeColorProperty, value); }
+        }
+
+        public double RightImageCircleStrokeWidth
+        {
+            get { return (double)GetValue(RightImageCircleStrokeWidthProperty); }
+            set { SetValue(RightImageCircleStrokeWidthProperty, value); }
+        }
+
+        public Color RightImageCircleColor
+        {
+            get { return (Color)GetValue(RightImageCircleColorProperty); }
+            set { SetValue(RightImageCircleColorProperty, value); }
+        }
 
         public TextAlignment ValueTextVerticalAligment
         {
@@ -701,6 +754,9 @@ namespace CoreXF
                     __LeftImage.SetBinding(Material.WidthRequestProperty, new Binding(nameof(LeftImageWidthRequest), source: this));
                     __LeftImage.SetBinding(Material.ImageTransXProperty, new Binding(nameof(LeftImageTransX), source: this));
                     __LeftImage.SetBinding(Material.ImageTransYProperty, new Binding(nameof(LeftImageTransY), source: this));
+                    __LeftImage.SetBinding(Material.CircleColorProperty, new Binding(nameof(LeftImageCircleColor), source: this));
+                    __LeftImage.SetBinding(Material.CircleStrokeColorProperty, new Binding(nameof(LeftImageCircleStrokeColor), source: this));
+                    __LeftImage.SetBinding(Material.CircleStrokeWidthProperty, new Binding(nameof(LeftImageCircleStrokeWidth), source: this));
                     //__LeftImage.SetBinding(Material.Property, new Binding(nameof(), source: this));
                     this.AddView(__LeftImage, Row:1);
                     
@@ -733,6 +789,9 @@ namespace CoreXF
                     __RightImage.SetBinding(Material.WidthRequestProperty, new Binding(nameof(RightImageWidthRequest), source: this));
                     __RightImage.SetBinding(Material.ImageTransXProperty, new Binding(nameof(RightImageTransX), source: this));
                     __RightImage.SetBinding(Material.ImageTransYProperty, new Binding(nameof(RightImageTransY), source: this));
+                    __RightImage.SetBinding(Material.CircleColorProperty, new Binding(nameof(RightImageCircleColor), source: this));
+                    __RightImage.SetBinding(Material.CircleStrokeColorProperty, new Binding(nameof(RightImageCircleStrokeColor), source: this));
+                    __RightImage.SetBinding(Material.CircleStrokeWidthProperty, new Binding(nameof(RightImageCircleStrokeWidth), source: this));
                     //__RightImage.SetBinding(Material.Property, new Binding(nameof(), source: this));
 
 
