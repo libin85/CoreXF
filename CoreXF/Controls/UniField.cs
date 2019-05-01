@@ -49,6 +49,8 @@ namespace CoreXF
         public static readonly BindableProperty ValueFontFamilyProperty = BindableProperty.Create(nameof(ValueFontFamily), typeof(string), typeof(Unifield), default(string));
         public static readonly BindableProperty ValueFontSizeProperty = BindableProperty.Create(nameof(ValueFontSize), typeof(double), typeof(Unifield), Device.GetNamedSize(NamedSize.Default,typeof(Entry)));
         public static readonly BindableProperty ValueMarginProperty = BindableProperty.Create(nameof(ValueMargin), typeof(Thickness), typeof(Unifield), default(Thickness));
+        public static readonly BindableProperty ValueTextHorizontalAligmentProperty = BindableProperty.Create(nameof(ValueTextHorizontalAligment), typeof(TextAlignment), typeof(Unifield), default(TextAlignment));
+        public static readonly BindableProperty ValueTextVerticalAligmentProperty = BindableProperty.Create(nameof(ValueTextVerticalAligment), typeof(TextAlignment), typeof(Unifield), TextAlignment.Center);
 
         public static readonly BindableProperty LeftImageSourceProperty = BindableProperty.Create(nameof(LeftImageSource), typeof(string), typeof(Unifield), default(string));
         public static readonly BindableProperty LeftImageTintColorProperty = BindableProperty.Create(nameof(LeftImageTintColor), typeof(Color), typeof(Unifield), Material.NoColor);
@@ -134,6 +136,18 @@ namespace CoreXF
         Lazy<IUserDialogs> _dialogs = new Lazy<IUserDialogs>(() => Locator.CurrentMutable.GetService<IUserDialogs>());
 
         #region Properties
+
+        public TextAlignment ValueTextVerticalAligment
+        {
+            get { return (TextAlignment)GetValue(ValueTextVerticalAligmentProperty); }
+            set { SetValue(ValueTextVerticalAligmentProperty, value); }
+        }
+
+        public TextAlignment ValueTextHorizontalAligment
+        {
+            get { return (TextAlignment)GetValue(ValueTextHorizontalAligmentProperty); }
+            set { SetValue(ValueTextHorizontalAligmentProperty, value); }
+        }
 
         public bool ReadOnly
         {
@@ -828,6 +842,9 @@ namespace CoreXF
 
                     __MainEntry.SetBinding(Entry.KeyboardProperty, new Binding(nameof(Keyboard), source: this));
                     __MainEntry.SetBinding(Entry.IsReadOnlyProperty, new Binding(nameof(ReadOnly), source: this));
+                    __MainEntry.SetBinding(Entry.HorizontalTextAlignmentProperty, new Binding(nameof(ValueTextHorizontalAligment), source: this));
+
+
                     __MainEntry.TextChanged += _entry_TextChanged;
                     __MainEntry.Focused += _entry_Focused;
                     __MainEntry.Unfocused += _entry_Unfocused;
@@ -882,12 +899,15 @@ namespace CoreXF
                     __MainLabel = new Label
                     {
                         BackgroundColor = Color.Transparent,
+                        VerticalTextAlignment = TextAlignment.Center
                     };
                     __MainLabel.SetBinding(Label.TextColorProperty, new Binding(nameof(ValueColor), source: this));
                     __MainLabel.SetBinding(Label.FontSizeProperty, new Binding(nameof(ValueFontSize), source: this));
                     __MainLabel.SetBinding(Label.FontFamilyProperty, new Binding(nameof(ValueFontFamily), source: this));
                     __MainLabel.SetBinding(Label.TextProperty, new Binding(nameof(Value), source: this));
                     __MainLabel.SetBinding(Label.MarginProperty, new Binding(nameof(ValueMargin), source: this));
+                    __MainLabel.SetBinding(Label.VerticalTextAlignmentProperty, new Binding(nameof(ValueTextVerticalAligment), source: this));
+                    __MainLabel.SetBinding(Label.HorizontalTextAlignmentProperty, new Binding(nameof(ValueTextHorizontalAligment), source: this));
 
                     this.AddView(__MainLabel, Row: 1, Column: 1);
                 }
