@@ -277,7 +277,7 @@ namespace CoreXF
                         }
                         await request
                             .SetCancellationTokenSource(cts)
-                            .Execute();
+                            .Evaluate();
 
                         Delete(currentItem);
                     }

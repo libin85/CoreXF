@@ -186,6 +186,10 @@ namespace CoreXF
 
         async Task OnExceptionCalls(Exception ex)
         {
+            if (!string.IsNullOrEmpty(_exceptionMessage))
+            {
+                await _dialogs.Value.AlertAsync(_exceptionMessage);
+            }
             // Manual
             if (_OnExceptionAsync != null)
             {
@@ -398,6 +402,20 @@ namespace CoreXF
 
         #endregion
 
+        // Retry
+        bool _retry;
+        TimeSpan _retryInterval;
+        int _retryCount;
+        Action _retryOnRetry;
+        public HttpRequestAbstract Retry(int RetryCount = 3,TimeSpan RetryInterval = default(TimeSpan), Action OnRetry = null)
+        {
+            _retry = true;
+            _retryInterval = RetryInterval == default(TimeSpan) ? TimeSpan.FromSeconds(1) : RetryInterval;
+            _retryCount = RetryCount;
+            _retryOnRetry = OnRetry;
+            return this;
+        }
+
         CancellationTokenSource _cts_external;
         CancellationTokenSource _cts_internal;
         public HttpRequestAbstract SetCancellationTokenSource(CancellationTokenSource cts)
@@ -429,7 +447,30 @@ namespace CoreXF
             }
             else
             {
-                return await RunRequest(httpClient);
+                var exceptions = new List<Exception>();
+                Exception lastException = null;
+                for (var retry = -1; retry < _retryCount; retry++)
+                {
+                    try
+                    {
+                        return await RunRequest(httpClient);//.ConfigureAwait(false);
+                    }
+                    catch (Exception ex)
+                    {
+                            
+                        if (!ExceptionManager.IsConnectionProblem(ex))
+                            throw;
+
+                        lastException = ex;
+
+                        _retryOnRetry?.Invoke();
+                        exceptions.Add(ex);
+                    }
+
+                    await Task.Delay(_retryInterval);//.ConfigureAwait(false);
+                }
+
+                throw lastException;
             }
         }
 
@@ -450,13 +491,9 @@ namespace CoreXF
             }
         }
 
-        public async Task Execute() =>
-            await Evaluate(ExecuteMode: true);
-        public void FireAndForget() =>
-            Evaluate().ConfigureAwait(false);
-        public async Task<object> Evaluate(bool ExecuteMode = false)
+        public void FireAndForget() => Evaluate().ConfigureAwait(false);
+        public async Task<object> Evaluate()
         {
-
           
             if (_cts_external == null)
                 _cts_internal = new CancellationTokenSource();
@@ -558,20 +595,26 @@ namespace CoreXF
             {
                 HideProgressActivity();
 
+                //await Task.Delay(50);
+
                 HttpStatusCodeException hsce = ex as HttpStatusCodeException;
 
-                if (hsce != null && hsce.Code == HttpStatusCode.InternalServerError)
+                if (hsce?.Code == HttpStatusCode.InternalServerError)
                 {
                     await OnServerErrorCalls();
                 }
-                else
+                else if(ExceptionManager.IsConnectionProblem(ex))
                 {
                     await OnConnectionErrorCalls();
+                }
+                else
+                {
+                    await OnExceptionCalls(ex);
                 }
 
                 ExceptionManager.SendError(ex);
 
-                await OnExceptionCalls(ex);
+                
 
                 if (!_catchException)
                 {

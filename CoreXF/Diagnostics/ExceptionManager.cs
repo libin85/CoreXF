@@ -21,6 +21,50 @@ namespace CoreXF
         // for deduplication
         static ConcurrentDictionary<string, Exception> _exceptions = new ConcurrentDictionary<string, Exception>();
 
+        public static bool IsConnectionProblem(Exception ex)
+        {
+            if (ex is OperationCanceledException)
+                return false;
+
+            AggregateException agex = ex as AggregateException;
+            if (agex?.InnerExceptions?.Count > 0)
+            {
+                ex = agex.InnerExceptions[agex.InnerExceptions.Count - 1];
+            }
+
+            if (ex is HttpStatusCodeException statusCodeException)
+            {
+                switch (statusCodeException.Code)
+                {
+                    case System.Net.HttpStatusCode.BadRequest:
+                    case System.Net.HttpStatusCode.Conflict:
+                    case System.Net.HttpStatusCode.ExpectationFailed:
+                    case System.Net.HttpStatusCode.Forbidden:
+                    case System.Net.HttpStatusCode.Gone:
+                    case System.Net.HttpStatusCode.HttpVersionNotSupported:
+                    case System.Net.HttpStatusCode.InternalServerError:
+                    case System.Net.HttpStatusCode.MethodNotAllowed:
+                    case System.Net.HttpStatusCode.Moved:
+                    case System.Net.HttpStatusCode.NoContent:
+                    case System.Net.HttpStatusCode.NotFound:
+                    case System.Net.HttpStatusCode.PaymentRequired:
+                    case System.Net.HttpStatusCode.PreconditionFailed:
+                    case System.Net.HttpStatusCode.ProxyAuthenticationRequired:
+                    case System.Net.HttpStatusCode.RequestedRangeNotSatisfiable:
+                    case System.Net.HttpStatusCode.RequestEntityTooLarge:
+                    case System.Net.HttpStatusCode.RequestUriTooLong:
+                    case System.Net.HttpStatusCode.Unauthorized:
+                    case System.Net.HttpStatusCode.UnsupportedMediaType:
+                    case System.Net.HttpStatusCode.UpgradeRequired:
+                    case System.Net.HttpStatusCode.UseProxy:
+                        return false;
+
+                }
+            }
+
+            return true;
+        }
+
         static bool IsIgnoredException(Exception exception)
         {
             if (exception == null)

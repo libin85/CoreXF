@@ -34,6 +34,7 @@
     <Compile Remove="DB\ProxyCollection.cs" />
     <Compile Remove="Diagnostics\HockeyApp.cs" />
     <Compile Remove="Dialogs\ExceptionAlert.xaml.cs" />
+    <Compile Remove="FluentHttp\Retry.cs" />
     <Compile Remove="FluentHttp\WebHelpers.cs" />
     <Compile Remove="Helpers\ExecuteExpressions.cs" />
     <Compile Remove="Helpers\Messaging.cs" />
