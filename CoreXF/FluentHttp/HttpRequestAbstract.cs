@@ -175,10 +175,10 @@ namespace CoreXF
 
         Action<Exception> _OnException;
         Func<Exception, Task> _OnExceptionAsync;
-        public HttpRequestAbstract CatchException(string UserMessage = null, Action<Exception> OnException = null, Func<Exception, Task> OnExceptionAsync = null)
+        public HttpRequestAbstract CatchException(string Message = null, Action<Exception> OnException = null, Func<Exception, Task> OnExceptionAsync = null)
         {
             _catchException = true;
-            _exceptionMessage = UserMessage ?? Tx.T("CommonMessages_UnknownError");
+            _exceptionMessage = Message ?? Tx.T("CommonMessages_UnknownError");
             _OnException = OnException;
             _OnExceptionAsync = OnExceptionAsync;
             return this;
@@ -315,22 +315,26 @@ namespace CoreXF
         }
 
         #endregion
+      
         // On connection
         #region OnConnection
 
         bool _onConnectionErrorFlag;
 
         Action _onConnectionError;
-        public HttpRequestAbstract OnConnectionError(Action onConnectionError = null)
+        string _onConnectionErrorMessage;
+        public HttpRequestAbstract OnConnectionError(string Message = null, Action onConnectionError = null)
         {
             _onConnectionErrorFlag = true;
+            _onConnectionErrorMessage = Message;
             _onConnectionError = onConnectionError;
             return this;
         }
 
         Func<Task> _onConnectionErrorAsync;
-        public HttpRequestAbstract OnConnectionError(Func<Task> onConnectionErrorAsync = null)
+        public HttpRequestAbstract OnConnectionErrorAsync(string Message = null, Func<Task> onConnectionErrorAsync = null)
         {
+            _onConnectionErrorMessage = Message;
             _onConnectionErrorFlag = true;
             _onConnectionErrorAsync = onConnectionErrorAsync;
             return this;
@@ -338,6 +342,11 @@ namespace CoreXF
 
         async Task OnConnectionErrorCalls()
         {
+            if (!string.IsNullOrEmpty(_onConnectionErrorMessage))
+            {
+                await _dialogs.Value.AlertAsync(_onConnectionErrorMessage);
+            }
+
             // Manual
             if (_onConnectionErrorAsync != null)
             {
@@ -354,23 +363,31 @@ namespace CoreXF
         bool _onServerErrorFlag;
 
         Action _onServerError;
-        public HttpRequestAbstract OnServerError(Action onServerError = null)
+        string _onServerErrorMessage;
+        public HttpRequestAbstract OnServerError(string Message = null, Action onServerError = null)
         {
             _onServerErrorFlag = true;
+            _onServerErrorMessage = Message;
             _onServerError = onServerError;
             return this;
         }
 
         Func<Task> _onServerErrorAsync;
-        public HttpRequestAbstract OnServerError(Func<Task> onServerErrorAsync = null)
+        public HttpRequestAbstract OnServerErrorAsync(string Message = null, Func<Task> onServerErrorAsync = null)
         {
             _onServerErrorFlag = true;
+            _onServerErrorMessage = Message;
             _onServerErrorAsync = onServerErrorAsync;
             return this;
         }
 
         async Task OnServerErrorCalls()
         {
+            if (!string.IsNullOrEmpty(_onServerErrorMessage))
+            {
+                await _dialogs.Value.AlertAsync(_onServerErrorMessage);
+            }
+
             // Manual
             if (_onServerErrorAsync != null)
             {

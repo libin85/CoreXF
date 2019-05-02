@@ -14,6 +14,8 @@ namespace CoreXF
 {
     public abstract class CoreApp : Application
     {
+        public const string CoreVersion = "2.0.0";
+
         public static NavigationPage NavigationPage;
 
         public static Assembly MainAssembly;
