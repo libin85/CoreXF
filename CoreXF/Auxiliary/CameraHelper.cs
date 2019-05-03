@@ -1,10 +1,12 @@
 ﻿
 using Acr.UserDialogs;
-using Plugin.Media;
-using Plugin.Media.Abstractions;
+//using Plugin.Media;
+//using Plugin.Media.Abstractions;
 using Plugin.Permissions;
 using Plugin.Permissions.Abstractions;
+using Splat;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace CoreXF
@@ -14,6 +16,29 @@ namespace CoreXF
 
         public static async Task<bool> CheckCameraPermissions(bool ScanQR = false)
         {
+
+
+            /*
+            var _dialogs = Locator.CurrentMutable.GetService<IUserDialogs>();
+
+            if (!CrossMedia.IsSupported)
+            {
+                _dialogs.Value.Alert("Неизвестная ошибка, на устройстве нет поддержки мультимедиа возможностей");
+                return;
+            }
+
+                    if (!CrossMedia.Current.IsCameraAvailable)
+                    {
+                        _dialogs.Value.Alert("На устройстве отсутствует камера");
+                        return;
+                    }
+
+            */
+
+            if (!await CheckPermissions(new Permission[] { Permission.Camera }, "Разрешение на использование камеры не получено"))
+                return false;
+
+            /*
             var status = await CrossPermissions.Current.CheckPermissionStatusAsync(Permission.Camera);
             if (status != PermissionStatus.Granted)
             {
@@ -36,8 +61,43 @@ namespace CoreXF
             }
 
             return false;
+            */
+            return true;
         }
 
+
+        public static async Task<bool> CheckPermissions(Permission[] permissions, string messageNoPermission)
+        {
+            List<Permission> permList = new List<Permission>();
+            foreach (var elm in permissions)
+            {
+                var status = await CrossPermissions.Current.CheckPermissionStatusAsync(elm);
+                if (status != PermissionStatus.Granted)
+                {
+                    permList.Add(elm);
+                }
+            }
+
+            if (permList.Count == 0)
+                return true;
+
+            var results = await CrossPermissions.Current.RequestPermissionsAsync(permList.ToArray());
+
+            if (results == null)
+                return false;
+
+            foreach (var elm in results)
+            {
+                if (elm.Value != PermissionStatus.Granted)
+                {
+                    var _dialogs = Locator.CurrentMutable.GetService<IUserDialogs>();
+                    _dialogs.Alert(messageNoPermission);
+                    return false;
+                }
+            }
+
+            return true;
+        }
 
         /*
         public static async Task<bool> CheckCameraPermissions(bool qr = false)
@@ -93,6 +153,8 @@ namespace CoreXF
             return false;
         }
         */
+
+            /*
         public static async Task<MediaFile> PickPhoto()
         {
             if (!CrossMedia.Current.IsPickPhotoSupported)
@@ -124,7 +186,7 @@ namespace CoreXF
 
             return file;
         }
-
+        */
         /*
         public static async Task<MediaFile> TakePhoto()
         {
