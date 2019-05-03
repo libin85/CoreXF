@@ -33,10 +33,6 @@ namespace CoreXF
             AddRequestTaskToQueue(request);
         }
 
-        public HttpRequest()
-        {
-        }
-
         public void AddRequestTaskToQueue(Task<object> request)
         {
             if(Requests == null)
@@ -170,14 +166,14 @@ namespace CoreXF
         // Exceptions
         #region OnException
 
-        bool _catchException;
+        bool _onExceptionFlag;
         string _exceptionMessage;
 
         Action<Exception> _OnException;
         Func<Exception, Task> _OnExceptionAsync;
         public HttpRequestAbstract CatchException(string Message = null, Action<Exception> OnException = null, Func<Exception, Task> OnExceptionAsync = null)
         {
-            _catchException = true;
+            _onExceptionFlag = true;
             _exceptionMessage = Message ?? Tx.T("CommonMessages_UnknownError");
             _OnException = OnException;
             _OnExceptionAsync = OnExceptionAsync;
@@ -267,7 +263,6 @@ namespace CoreXF
         }
 
         #endregion
-
 
         // OnCancel
         #region OnCancel
@@ -360,7 +355,6 @@ namespace CoreXF
         }
         #endregion
 
-
         // on server error
         #region OnServerError
 
@@ -435,15 +429,10 @@ namespace CoreXF
             {
                 httpClient.CancellationToken = cts.Token;
             }
-            if((Requests?.Count ?? 0) > 0)
+            if(Requests?.Count > 0)
             {
                 await Task.WhenAll(Requests.ToArray());
                 return null;
-            }
-            else if (_request != null)
-            {
-                var t1 = await Task.Run<object>(async () => await _request(httpClient));
-                return t1;
             }
             else
             {
@@ -453,7 +442,14 @@ namespace CoreXF
                 {
                     try
                     {
-                        return await RunRequest(httpClient);//.ConfigureAwait(false);
+                        if(_request != null)
+                        {
+                            return await _request.Invoke(httpClient);
+                        }
+                        else
+                        {
+                            return await RunRequest(httpClient);//.ConfigureAwait(false);
+                        }
                     }
                     catch (Exception ex)
                     {
@@ -595,28 +591,33 @@ namespace CoreXF
             {
                 HideProgressActivity();
 
-                //await Task.Delay(50);
+                if (!ExceptionManager.IsConnectionProblem(ex))
+                {
+                    ExceptionManager.SendError(ex);
+                }
 
                 HttpStatusCodeException hsce = ex as HttpStatusCodeException;
 
-                if (hsce?.Code == HttpStatusCode.InternalServerError)
+                if (_onServerErrorFlag && hsce?.Code == HttpStatusCode.InternalServerError)
                 {
                     await OnServerErrorCalls();
                 }
-                else if(ExceptionManager.IsConnectionProblem(ex))
+                else if(_onConnectionErrorFlag && ExceptionManager.IsConnectionProblem(ex))
                 {
                     await OnConnectionErrorCalls();
                 }
-                else
+                else if(_onExceptionFlag)
                 {
                     await OnExceptionCalls(ex);
                 }
 
-                ExceptionManager.SendError(ex);
-
+                if (!ExceptionManager.IsConnectionProblem(ex))
+                {
+                    ExceptionManager.SendError(ex);
+                }
                 
 
-                if (!_catchException)
+                if (!_onExceptionFlag)
                 {
                     throw;
                 }
