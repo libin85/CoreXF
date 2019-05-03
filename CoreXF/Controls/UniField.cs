@@ -1318,6 +1318,20 @@ namespace CoreXF
             }
         }
 
+        public new bool Focus()
+        {
+            if(__TextEditor != null)
+            {
+                return __TextEditor.Focus();
+            }
+            if(__MainEntry != null)
+            {
+                return __MainEntry.Focus();
+            }
+            return false;
+        }
+        
+
         public void Dispose()
         {
             if(__MainEntry != null)
