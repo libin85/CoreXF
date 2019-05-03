@@ -60,6 +60,22 @@ namespace CoreXF.NavigationAbstraction
         {
         }
 
+
+        IKeyboardNotifications _keyboardNotificationService;
+        public void AddiOSKeyboardHandler(Action<double> handler)
+        {
+            if (Device.RuntimePlatform != Device.iOS)
+                return;
+
+            if (_keyboardNotificationService == null)
+            {
+                DisposableItems += _keyboardNotificationService = DependencyService.Get<IKeyboardNotifications>();
+                _keyboardNotificationService.StartListening();
+            }
+            
+            _keyboardNotificationService.OnKeyboardNotification = handler;
+        }
+
         bool _firstAppearing = true;
         protected override void OnAppearing()
         {
