@@ -38,7 +38,6 @@
     <Compile Remove="FluentHttp\WebHelpers.cs" />
     <Compile Remove="Helpers\ExecuteExpressions.cs" />
     <Compile Remove="Helpers\JSonHelper.cs" />
-    <Compile Remove="Helpers\Messaging.cs" />
     <Compile Remove="Helpers\ObservableCollectionExtensions.cs" />
     <Compile Remove="Helpers\TaskHelper.cs" />
     <Compile Remove="MarkupExtensions\DeclensionExtension.cs" />
@@ -86,6 +85,7 @@
     <PackageReference Include="System.Reactive.PlatformServices" Version="4.0.0" />
     <PackageReference Include="Xam.Plugin.Connectivity" Version="4.0.0.190-beta" />
     <PackageReference Include="Xam.Plugin.DeviceInfo" Version="4.1.1" />
+    <PackageReference Include="Xam.Plugins.Messaging" Version="5.2.0" />
     <PackageReference Include="Xam.Plugins.Settings" Version="3.1.1" />
     <PackageReference Include="Xamarin.Essentials" Version="1.1.0" />
     <PackageReference Include="Xamarin.FFImageLoading" Version="2.4.6.929" />

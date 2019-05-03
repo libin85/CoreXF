@@ -1,6 +1,7 @@
 ﻿
 using Acr.UserDialogs;
 using Plugin.Messaging;
+using Splat;
 using System;
 using System.Threading.Tasks;
 using Xamarin.Forms;
@@ -10,8 +11,19 @@ namespace CoreXF
     public class Messaging
     {
 
-       static public async Task SendEmail(string email,IUserDialogs _dialogs, string subject = null,string message = null)
+        static public void SendEmailToSupport(string Email,string Subject = null)
         {
+            Messaging.SendEmail(
+                Email,
+                Subject == null ? "[MobileApp]" : Subject, 
+                $"\n\n\n App ver {DeviceInfo.AppVersion} {AppConfig.ConfigPrefix} {DeviceInfo.OsBuild} {DeviceInfo.OsVersion} {CoreUserSettings.LastLogin} {DeviceInfo.Manufacturer} {DeviceInfo.DeviceName}"
+            );
+        }
+
+        static public void SendEmail(string Email, string Subject = null,string Message = null)
+        {
+            IUserDialogs _dialogs = Locator.CurrentMutable.GetService<IUserDialogs>();
+
             var emailMessenger = CrossMessaging.Current.EmailMessenger;
 
             if (!emailMessenger.CanSendEmail)
@@ -31,7 +43,7 @@ namespace CoreXF
 
             try
             {
-                emailMessenger.SendEmail(email,subject,message);
+                emailMessenger.SendEmail(Email, Subject, Message);
             }
             catch (Exception ex)
             {
