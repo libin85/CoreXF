@@ -24,16 +24,6 @@ namespace CoreXF
             return result;
         }
 
-        public static bool PasswordIsValid(string password)
-        {
-            return password.NotNullAndEmpty() && password.Length > 2;
-        }
-
-        public static bool StringIsValid(string str)
-        {
-            return str.NotNullAndEmpty();
-        }
-
         public static bool UrlIsValid(string url)
         {
             return Uri.IsWellFormedUriString(url, UriKind.Absolute);

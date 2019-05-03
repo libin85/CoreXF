@@ -18,29 +18,11 @@ namespace CoreXF
             return str.ToUpper();
         }
 
-        public static string Set(this string str,params object[] args)
-        {
-            return string.Format(str, args);
-        }
+        public static string Set(this string str,params object[] args) => string.Format(str, args);
 
-        public static bool NotNullAndEmpty(this string str)
-        {
-            return !string.IsNullOrEmpty(str) && !string.IsNullOrWhiteSpace(str);
-        }
+        public static bool NotNullAndEmpty(this string str) => !string.IsNullOrWhiteSpace(str);
 
         // https://stackoverflow.com/questions/1879395/how-do-i-generate-a-stream-from-a-string
-        /*
-        public static Stream ToStream(this string str)
-        {
-            MemoryStream stream = new MemoryStream();
-            StreamWriter writer = new StreamWriter(stream);
-            writer.Write(str);
-            writer.Flush();
-            stream.Position = 0;
-            return stream;
-        }
-        */
-
         public static Stream ToStream(this string str, Encoding enc = null)
         {
             enc = enc ?? Encoding.UTF8;

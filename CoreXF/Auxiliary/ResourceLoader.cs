@@ -34,7 +34,8 @@ namespace CoreXF
             }
 
             Stream stream = selectedAssembly.GetManifestResourceStream($"{asmName}.Resources.{realPath}");
-            if (stream == null) throw new Exception($"Error retrieving {path} from Assembly {asmName}. Make sure Build Action is Embedded Resource");
+            if (stream == null)
+                throw new Exception($"Error retrieving {path} from Assembly {asmName}. Make sure Build Action is Embedded Resource");
             return stream;
         }
 
