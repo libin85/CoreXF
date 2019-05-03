@@ -25,7 +25,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Remove="Auxiliary\CameraHelper.cs" />
     <Compile Remove="Controls\ExtendedWebView.cs" />
     <Compile Remove="DB\CaughtExceptionModel.cs" />
     <Compile Remove="DB\DBHelpers.cs" />

@@ -137,6 +137,9 @@ namespace CoreXF
             if (string.IsNullOrEmpty(CoreUserSettings.AppUUID))
                 CoreUserSettings.AppUUID = Guid.NewGuid().ToString();
 
+            // Localization
+            StringResourceManagers.Add(new ResourceManager($"{ResourceLoader.CoreAssemblyName}.Resx.Res", ResourceLoader.CoreAssembly));
+
             // Update
             var arr = DeviceInfo.AppVersion.Split('.');
             int.TryParse(arr[arr.Length - 1],out int curVersion);
