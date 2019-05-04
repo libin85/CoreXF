@@ -7,6 +7,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using System.IO;
+using Xamarin.Forms;
 
 namespace CoreXF
 {
@@ -32,7 +33,7 @@ namespace CoreXF
             byte[] img = { 1, 3, 5 };
             await config.DiskCache.AddToSavingQueueIfNotExistsAsync(key, img, Duration == default(TimeSpan) ? TimeSpan.FromDays(1) : Duration);
 
-             await Task.Delay(100);
+            await Task.Delay(100);
 
             // Copy file to cache
             string filePath = await config.DiskCache.GetFilePathAsync(key);
@@ -65,30 +66,37 @@ namespace CoreXF
         //  });
         //  stream.ImageStream.Dispose();
         //
-        public static async Task<CacheStream> Download(string Url, Action<FileWriteInfo> FileWriteFinished = null)
+        public static async Task Download(string Url, Action<FileWriteInfo> FileWriteFinished = null)
         {
             Configuration config = ImageService.Instance.Config;
             string key = config.MD5Helper.MD5(Url);
+
+            // If file has been downloaded previously
+            string filePath = await config.DiskCache.GetFilePathAsync(key);
+            if (filePath.NotNullAndEmpty())
+            {
+                FileWriteFinished.Invoke(new FileWriteInfo(filePath, Url));
+                return;
+            }
 
             var param = TaskParameter.FromUrl(Url);
 
             if (FileWriteFinished != null)
             {
                 // Fired only when file downloaded first time
-                param.FileWriteFinished(FileWriteFinished.Invoke);
+                param.FileWriteFinished(async fileWriteInfo =>
+                {
+                    filePath = await config.DiskCache.GetFilePathAsync(key);
+                    Device.BeginInvokeOnMainThread(() =>
+                    {
+                        FileWriteFinished(new FileWriteInfo(filePath, key));
+                    });
+
+                });
             }
 
             CacheStream stream = await config.DownloadCache.DownloadAndCacheIfNeededAsync(Url, param, config, CancellationToken.None);
-
-            string filePath = await config.DiskCache.GetFilePathAsync(key);
-
-            // If file has been downloaded previously
-            if (filePath != null && FileWriteFinished != null)
-            {
-                FileWriteFinished.Invoke(new FileWriteInfo(filePath, Url));
-            }
-
-            return stream;
+            stream.ImageStream?.Dispose();
         }
 
         public static Task<bool> Exists(string Url)
