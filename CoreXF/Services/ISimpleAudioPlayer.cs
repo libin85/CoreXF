@@ -8,7 +8,6 @@ using Xamarin.Forms;
 
 namespace CoreXF
 {
-
     public static class LocalAudioPlayer
     {
         class Cache : GenericCache<string, ISimpleAudioPlayer>
