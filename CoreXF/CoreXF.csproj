@@ -60,7 +60,6 @@
     <PackageReference Include="Microsoft.AppCenter" Version="1.14.0" />
     <PackageReference Include="Microsoft.AppCenter.Analytics" Version="1.14.0" />
     <PackageReference Include="Microsoft.AppCenter.Crashes" Version="1.14.0" />
-    <PackageReference Include="Microsoft.AppCenter.Distribute" Version="1.14.0" />
     <PackageReference Include="Microsoft.AppCenter.Push" Version="1.14.0" />
     <PackageReference Include="Microsoft.NETCore.Platforms" Version="2.2.0" />
     <PackageReference Include="NETStandard.Library" Version="2.0.3" />
