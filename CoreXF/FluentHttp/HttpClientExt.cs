@@ -343,7 +343,6 @@ namespace CoreXF
             string fullurl = BuildUrl(Api, Url);
             var res = await SendAsync(method ?? HttpMethod.Delete, fullurl, Api, stringContent);
             return res;
-
         }
 
         public async Task<HttpResponseMessage> PutAsync<T>(string Url, T value, APIServiceAbstract Api = null, HttpMethod method = null) where T : class
@@ -370,8 +369,26 @@ namespace CoreXF
 
                 result = await HttpDeserialization.Deserialize<TResponse>(message, Url);
             }
-            return result;
 
+            return result;
+        }
+
+        public async Task<T> PutAsync<T>(string Url, APIServiceAbstract Api = null, HttpContent content = null, HttpMethod method = null)
+        {
+            HttpContent content_ = content ?? new StringContent("");
+
+            string fullUrl_ = BuildUrl(Api, Url);
+
+            using (var resp = await SendAsync(method ?? HttpMethod.Put, fullUrl_, Api, content_))
+            {
+                if (resp.StatusCode == HttpStatusCode.OK)
+                {
+                    T val = await HttpDeserialization.Deserialize<T>(resp, fullUrl_);
+                    return val;
+                }
+
+                throw new HttpStatusCodeException(resp.StatusCode, $"HTTP Post {BuildShortUrl(Url)} Code {resp.StatusCode}");
+            }
         }
 
         public async Task<T> PostAsync<T>(string Url, APIServiceAbstract Api = null, HttpContent content = null, HttpMethod method = null)
